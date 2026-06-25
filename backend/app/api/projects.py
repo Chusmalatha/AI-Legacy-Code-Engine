@@ -37,6 +37,7 @@ IGNORE_DIRS = {
     ".history",
     ".sass-cache",
     ".parcel-cache",
+    "temp_clone",
 }
 
 IGNORE_FILES = {

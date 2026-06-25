@@ -37,6 +37,8 @@ async def upload_repository(
         if not url.startswith("https://github.com/"):
             raise HTTPException(status_code=400, detail="Invalid GitHub URL")
         project_name = url.rstrip("/").split("/")[-1]
+        if project_name.endswith(".git"):
+            project_name = project_name[:-4]
     else:
         # ZIP upload - write the uploaded file to disk synchronously/asynchronously during request
         if not file.filename.lower().endswith('.zip'):
@@ -48,14 +50,24 @@ async def upload_repository(
         project_name = file.filename[:-4]  # default project name from ZIP name
 
     # Initialise in‑memory state for the project
-    set_project_info(project_id, {
+    info = {
         "project_id": project_id,
         "project_name": project_name,
         "status": "processing",
         "file_count": 0,
         "chunk_count": 0,
         "error": None,
-    })
+        "source": "github" if url else "zip"
+    }
+    set_project_info(project_id, info)
+    
+    # Save project_info.json to disk
+    import json
+    try:
+        with open(project_path / "project_info.json", "w", encoding="utf-8") as f:
+            json.dump(info, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
 
     # Launch background pipeline with clone or ZIP extraction handled there
     background_tasks.add_task(

@@ -62,12 +62,23 @@ def initialize_state():
         metadata_path = project_dir / "vector_db" / "metadata.json"
         chunks_path = project_dir / "chunks" / "chunks.json"
         
-        status = "error"
-        error_msg = "Process interrupted on server restart."
-        file_count = 0
-        chunk_count = 0
-        
-        if chunks_path.exists():
+        # Load from project_info.json if it exists
+        info_path = project_dir / "project_info.json"
+        disk_info = {}
+        if info_path.exists():
+            try:
+                with open(info_path, "r", encoding="utf-8") as f:
+                    disk_info = json.load(f)
+            except Exception:
+                pass
+
+        status = disk_info.get("status", "error" if not index_path.exists() else "ready")
+        error_msg = disk_info.get("error", "Process interrupted on server restart." if status == "error" else None)
+        file_count = disk_info.get("file_count", 0)
+        chunk_count = disk_info.get("chunk_count", 0)
+        project_name = disk_info.get("project_name", project_id)
+
+        if chunk_count == 0 and chunks_path.exists():
             try:
                 with open(chunks_path, "r", encoding="utf-8") as f:
                     chunks = json.load(f)
@@ -79,8 +90,6 @@ def initialize_state():
         loaded_index = None
         loaded_meta = None
         if index_path.exists() and metadata_path.exists():
-            status = "ready"
-            error_msg = None
             if faiss is not None:
                 try:
                     loaded_index = faiss.read_index(str(index_path))
@@ -91,12 +100,13 @@ def initialize_state():
                     status = "error"
                     error_msg = f"Failed to load FAISS index: {e}"
         
-        project_name = project_id
-        # Let's try to detect the project name from subdirectories
-        for entry in project_dir.iterdir():
-            if entry.is_dir() and entry.name not in ["chunks", "vector_db", ".git"]:
-                project_name = entry.name
-                break
+        # If project name is still project_id (no info file), guess it from directories
+        if project_name == project_id:
+            ignore_guess_dirs = ["chunks", "vector_db", ".git", ".github", ".vscode", "node_modules", "venv", ".venv", "dist", "build", "temp_clone"]
+            for entry in project_dir.iterdir():
+                if entry.is_dir() and entry.name not in ignore_guess_dirs:
+                    project_name = entry.name
+                    break
         
         PROJECTS[project_id] = {
             "project_id": project_id,
@@ -105,6 +115,7 @@ def initialize_state():
             "file_count": file_count,
             "chunk_count": chunk_count,
             "error": error_msg,
+            "source": disk_info.get("source", "repository")
         }
         
         if loaded_index and loaded_meta:
