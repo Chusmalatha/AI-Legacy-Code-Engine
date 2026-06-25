@@ -1,0 +1,33 @@
+# Python / Backend ignores
+backend/venv/
+backend/.venv/
+backend/env/
+backend/uploads/projects/*
+!backend/uploads/projects/.gitkeep
+backend/__pycache__/
+backend/**/*.pyc
+backend/**/*.pyo
+backend/**/*.pyd
+
+# Node / Frontend ignores
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.log
+frontend/npm-debug.log*
+
+# Environment / Secret files (CRITICAL!)
+.env
+.env.local
+.env.*.local
+*.env
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# Editor / System ignores
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.sln
