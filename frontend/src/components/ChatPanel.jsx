@@ -37,7 +37,7 @@ const ChatPanel = ({ projectId, onToggleSidebar }) => {
     }
   }, [messages, loading]);
 
-  const isProcessing = ['cloning', 'extracting', 'analyzing', 'indexing', 'processing'].includes(projectInfo.status);
+  const isProcessing = ['cloning', 'extracting', 'chunking', 'analyzing', 'indexing', 'processing'].includes(projectInfo.status);
   const isError = projectInfo.status === 'error';
 
   if (isProcessing) {

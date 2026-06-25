@@ -69,6 +69,7 @@ const LeftSidebar = ({ onCloseSidebar }) => {
         );
       case 'cloning':
       case 'extracting':
+      case 'chunking':
       case 'analyzing':
       case 'indexing':
       case 'processing':

@@ -37,9 +37,9 @@ async def process_repository(project_id: str, url: str = None, zip_path: str = N
                 info["project_name"] = entries[0].name
                 set_project_info(project_id, info)
 
-        # 2. Run analysis
+        # 2. Run analysis (chunking)
         info = get_project_info(project_id) or {}
-        info.update({"status": "analyzing"})
+        info.update({"status": "chunking"})
         set_project_info(project_id, info)
 
         analysis_response = await analyze_project(project_id)
