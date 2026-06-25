@@ -2,6 +2,10 @@
 
 An advanced, premium-tier developer tool that brings a **NotebookLM-like Q&A experience** to any codebase. Developers, founders, and HR teams can upload a GitHub repository URL or a ZIP archive, and the engine automatically clones/extracts, parses, chunks, embeds, and indexes it into a local vector database. Users can then query the codebase conversationally and receive answers complete with precise source-file citations.
 
+### 🔗 Live Deployments
+* **Frontend Web App (Vercel)**: [https://ai-legacy-code-engine.vercel.app/](https://ai-legacy-code-engine.vercel.app/)
+* **Backend API Server (Render)**: [https://ai-legacy-code-engine.onrender.com](https://ai-legacy-code-engine.onrender.com)
+
 ---
 
 ## 🚀 Key Features

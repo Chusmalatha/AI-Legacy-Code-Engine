@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE = '';
+const isProduction = window.location.hostname === 'ai-legacy-code-engine.vercel.app';
+const API_BASE = isProduction ? 'https://ai-legacy-code-engine.onrender.com' : '';
 
 export const uploadRepository = async (url, file) => {
   const form = new FormData();
