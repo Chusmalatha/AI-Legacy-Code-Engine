@@ -37,6 +37,78 @@ const ChatPanel = ({ projectId, onToggleSidebar }) => {
     }
   }, [messages, loading]);
 
+  const isProcessing = ['cloning', 'extracting', 'analyzing', 'indexing', 'processing'].includes(projectInfo.status);
+  const isError = projectInfo.status === 'error';
+
+  if (isProcessing) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 border border-slate-800 rounded-2xl p-6 text-center shadow-2xl h-full relative">
+        {/* Burger trigger for mobile */}
+        <button
+          onClick={onToggleSidebar}
+          className="absolute top-4 left-4 p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850 md:hidden active:scale-95 transition-all"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div className="relative mb-6">
+          {/* Inner ring */}
+          <div className="w-16 h-16 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin" />
+          {/* Outer ring */}
+          <div className="absolute inset-0 w-16 h-16 rounded-full border-4 border-dashed border-purple-500/20 border-b-purple-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '3s' }} />
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2 tracking-wide capitalize">
+          Processing {projectInfo.project_name || 'Source'}
+        </h3>
+        <div className="flex items-center space-x-2 bg-indigo-950/60 border border-indigo-900/60 px-4 py-1.5 rounded-full text-indigo-400 font-semibold text-xs tracking-wider uppercase animate-pulse">
+          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
+          <span>Status: {projectInfo.status}...</span>
+        </div>
+        <p className="text-sm text-slate-500 max-w-xs leading-relaxed mt-4">
+          Please wait while we clone, extract, and build the FAISS vector database index for Q&A. This takes a moment.
+        </p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 border border-slate-800 rounded-2xl p-6 text-center shadow-2xl h-full relative">
+        {/* Burger trigger for mobile */}
+        <button
+          onClick={onToggleSidebar}
+          className="absolute top-4 left-4 p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-850 md:hidden active:scale-95 transition-all"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div className="w-16 h-16 rounded-2xl bg-red-950/40 border border-red-900/40 flex items-center justify-center text-red-500 mb-6">
+          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2 tracking-wide">Ingestion Failed</h3>
+        <p className="text-sm text-slate-400 max-w-md leading-relaxed mb-6">
+          An error occurred while trying to process the repository source code:
+        </p>
+        <div className="bg-red-950/20 border border-red-900/40 rounded-xl p-4 text-xs text-red-300 font-mono max-w-md text-left overflow-y-auto max-h-48 scrollbar-thin">
+          <span className="font-bold">Pipeline Error: </span>
+          {projectInfo.error || 'Unknown setup error.'}
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-6 px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-850 font-bold text-sm tracking-wide transition-all active:scale-95"
+        >
+          Refresh Page
+        </button>
+      </div>
+    );
+  }
+
   const handleSend = async (textToSend) => {
     const queryText = textToSend || input;
     if (!queryText.trim() || loading) return;
