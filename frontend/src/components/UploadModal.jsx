@@ -7,7 +7,7 @@ const UploadModal = ({ onClose, onProjectCreated }) => {
   const [url, setUrl] = useState('');
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { addProject } = useContext(ProjectContext);
+  const { addProject, setIsUploading } = useContext(ProjectContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,13 +15,14 @@ const UploadModal = ({ onClose, onProjectCreated }) => {
     if (activeTab === 'zip' && !file) return;
 
     setLoading(true);
+    if (setIsUploading) setIsUploading(true);
     try {
       // Send only the relevant parameter based on the selected tab
       const result = await uploadRepository(
         activeTab === 'github' ? url.trim() : null,
         activeTab === 'zip' ? file : null
       );
-      
+
       const newProj = {
         project_id: result.project_id,
         project_name: result.project_name || 'Untitled',
@@ -40,6 +41,7 @@ const UploadModal = ({ onClose, onProjectCreated }) => {
       alert(err.response?.data?.detail || 'Failed to upload repository source.');
     } finally {
       setLoading(false);
+      if (setIsUploading) setIsUploading(false);
     }
   };
 
@@ -67,22 +69,20 @@ const UploadModal = ({ onClose, onProjectCreated }) => {
         <div className="flex border-b border-slate-800/80 px-4 pt-2.5 bg-slate-950/20">
           <button
             onClick={() => !loading && setActiveTab('github')}
-            className={`flex-1 pb-3 text-sm font-bold tracking-wide transition-all border-b-2 text-center ${
-              activeTab === 'github'
-                ? 'border-indigo-500 text-indigo-400 font-extrabold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+            className={`flex-1 pb-3 text-sm font-bold tracking-wide transition-all border-b-2 text-center ${activeTab === 'github'
+              ? 'border-indigo-500 text-indigo-400 font-extrabold'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
             disabled={loading}
           >
             GitHub Repository
           </button>
           <button
             onClick={() => !loading && setActiveTab('zip')}
-            className={`flex-1 pb-3 text-sm font-bold tracking-wide transition-all border-b-2 text-center ${
-              activeTab === 'zip'
-                ? 'border-indigo-500 text-indigo-400 font-extrabold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
+            className={`flex-1 pb-3 text-sm font-bold tracking-wide transition-all border-b-2 text-center ${activeTab === 'zip'
+              ? 'border-indigo-500 text-indigo-400 font-extrabold'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
             disabled={loading}
           >
             Local ZIP Archive
@@ -165,8 +165,8 @@ const UploadModal = ({ onClose, onProjectCreated }) => {
                 </svg>
               )}
               <span>
-                {loading 
-                  ? (activeTab === 'github' ? 'Cloning & Ingesting...' : 'Uploading & Ingesting...') 
+                {loading
+                  ? (activeTab === 'github' ? 'Cloning...' : 'Uploading...')
                   : (activeTab === 'github' ? 'Ingest Repository' : 'Upload ZIP Archive')
                 }
               </span>

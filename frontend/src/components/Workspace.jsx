@@ -4,7 +4,7 @@ import LeftSidebar from './LeftSidebar.jsx';
 import ChatPanel from './ChatPanel';
 
 const Workspace = () => {
-  const { activeProjectId } = useContext(ProjectContext);
+  const { activeProjectId, isUploading } = useContext(ProjectContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -26,7 +26,26 @@ const Workspace = () => {
 
       {/* Main chat/content area */}
       <div className="flex-1 h-full p-4 md:p-6 overflow-hidden flex flex-col min-w-0">
-        {activeProjectId ? (
+        {isUploading ? (
+          <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 border border-slate-800 rounded-2xl p-6 text-center shadow-2xl h-full relative">
+            <div className="relative mb-6">
+              {/* Inner ring */}
+              <div className="w-16 h-16 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin" />
+              {/* Outer ring */}
+              <div className="absolute inset-0 w-16 h-16 rounded-full border-4 border-dashed border-purple-500/20 border-b-purple-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '3s' }} />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2 tracking-wide">
+              Uploading Source
+            </h3>
+            <div className="flex items-center space-x-2 bg-indigo-950/60 border border-indigo-900/60 px-4 py-1.5 rounded-full text-indigo-400 font-semibold text-xs tracking-wider uppercase animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
+              <span>Status: Uploading...</span>
+            </div>
+            <p className="text-sm text-slate-500 max-w-xs leading-relaxed mt-4">
+              Sending repository data to Render. As soon as the upload completes, we will begin extracting and indexing.
+            </p>
+          </div>
+        ) : activeProjectId ? (
           <ChatPanel projectId={activeProjectId} onToggleSidebar={() => setSidebarOpen(true)} />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-slate-800 rounded-2xl bg-slate-900/10 relative p-6">

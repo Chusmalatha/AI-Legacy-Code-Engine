@@ -7,6 +7,7 @@ export const ProjectProvider = ({ children }) => {
   const [projects, setProjects] = useState({}); // {projectId: {project_name, status, file_count, chunk_count, source}}
   const [activeProjectId, setActiveProjectId] = useState(null);
   const [chatHistory, setChatHistory] = useState({}); // {projectId: [{question, answer, sources}]}
+  const [isUploading, setIsUploading] = useState(false);
 
   // Load existing projects from backend
   useEffect(() => {
@@ -72,6 +73,8 @@ export const ProjectProvider = ({ children }) => {
         chatHistory,
         addChatEntry,
         removeProject,
+        isUploading,
+        setIsUploading,
       }}
     >
       {children}
