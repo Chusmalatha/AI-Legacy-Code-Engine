@@ -1,4 +1,9 @@
 fastapi
 uvicorn[standard]
-python-multipart
 gitpython
+aiofiles
+python-multipart
+faiss-cpu
+numpy
+python-dotenv
+requests
